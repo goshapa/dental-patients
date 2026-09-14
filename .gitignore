@@ -1,0 +1,13 @@
+venv/
+data/
+static/uploads/
+.env
+__pycache__/
+*.pyc
+
+.vercel
+.env*
+!.env.example
+.agents/
+.claude/
+skills-lock.json

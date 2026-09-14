@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Редактировать пациента' if patient else 'Новый пациент' }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>{{ 'Редактировать пациента' if patient else 'Новый пациент' }}</h1>
+  <form method="post">
+    <label>ФИО *</label>
+    <input type="text" name="full_name" required value="{{ patient.full_name if patient else '' }}">
+
+    <div class="row">
+      <div>
+        <label>Дата рождения</label>
+        <input type="date" name="birth_date" value="{{ patient.birth_date if patient else '' }}">
+      </div>
+      <div>
+        <label>Телефон</label>
+        <input type="tel" name="phone" value="{{ patient.phone if patient else '' }}">
+      </div>
+    </div>
+
+    <label>Аллергии (в т.ч. на анестетики/препараты)</label>
+    <textarea name="allergies">{{ patient.allergies if patient else '' }}</textarea>
+
+    <label>Хронические заболевания</label>
+    <textarea name="chronic_conditions">{{ patient.chronic_conditions if patient else '' }}</textarea>
+
+    <label>Прочие заметки</label>
+    <textarea name="notes">{{ patient.notes if patient else '' }}</textarea>
+
+    <button class="btn" type="submit">Сохранить</button>
+    <a class="btn secondary" href="{{ url_for('patient_detail', patient_id=patient.id) if patient else url_for('index') }}">Отмена</a>
+  </form>
+</div>
+{% endblock %}

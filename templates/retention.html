@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Срок хранения{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>Срок хранения карт (5 лет)</h1>
+  <p class="muted">Карты медицинской документации должны храниться не менее {{ years }} лет с даты последнего обращения. Ниже — пациенты, у которых последний визит был раньше {{ cutoff }}. Их карты можно удалить, если это разрешено внутренними правилами клиники.</p>
+  {% if patients %}
+  <table>
+    <tr><th>ФИО</th><th>Последний визит</th><th></th></tr>
+    {% for p in patients %}
+    <tr>
+      <td><a href="{{ url_for('patient_detail', patient_id=p.id) }}">{{ p.full_name }}</a></td>
+      <td>{{ p.last_visit }}</td>
+      <td><span class="badge">истёк срок хранения</span></td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Таких карт пока нет — все в пределах срока хранения.</p>
+  {% endif %}
+</div>
+{% endblock %}

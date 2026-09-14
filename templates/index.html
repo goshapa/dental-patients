@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Пациенты — Карты пациентов{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <h1>Пациенты</h1>
+  <a class="btn" href="{{ url_for('new_patient') }}">+ Новый пациент</a>
+</div>
+
+<form class="search-bar" method="get" action="{{ url_for('index') }}">
+  <input type="text" name="q" value="{{ q }}" placeholder="Поиск по ФИО, телефону или дате рождения…">
+  <button class="btn secondary" type="submit">Найти</button>
+</form>
+
+<div class="card">
+  {% if patients %}
+  <table>
+    <tr>
+      <th>ФИО</th>
+      <th>Дата рождения</th>
+      <th>Телефон</th>
+      <th>Последний визит</th>
+    </tr>
+    {% for p in patients %}
+    <tr onclick="location.href='{{ url_for('patient_detail', patient_id=p.id) }}'" style="cursor:pointer">
+      <td>{{ p.full_name }}</td>
+      <td>{{ p.birth_date or '—' }}</td>
+      <td>{{ p.phone or '—' }}</td>
+      <td>{{ p.last_visit or '—' }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p class="muted">Пациенты не найдены. Добавьте первого пациента.</p>
+  {% endif %}
+</div>
+{% endblock %}

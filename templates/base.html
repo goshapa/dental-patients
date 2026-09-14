@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Карты пациентов{% endblock %}</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #1e2430;
+    --muted: #6b7280;
+    --border: #e2e5ea;
+    --accent: #2f6fed;
+    --accent-dark: #1f52b8;
+    --danger: #d64545;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header a.brand {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  main {
+    max-width: 960px;
+    margin: 24px auto;
+    padding: 0 16px 60px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  h2 { font-size: 17px; margin: 0 0 12px; }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin: 10px 0 4px;
+  }
+  input[type=text], input[type=date], input[type=tel], textarea, input[type=file], select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  textarea { resize: vertical; min-height: 60px; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 200px; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 14px;
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn.secondary { background: #eceff3; color: var(--text); }
+  .btn.secondary:hover { background: #dde1e7; }
+  .btn.danger { background: var(--danger); }
+  .btn.danger:hover { background: #b73333; }
+  a { color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; }
+  tr:hover td { background: #fafbfc; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .search-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .search-bar input { flex: 1; }
+  .visit {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .visit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .visit-date { font-weight: 700; }
+  .field-label { color: var(--muted); font-size: 12px; text-transform: uppercase; margin-top: 8px; }
+  .field-value { font-size: 14px; white-space: pre-wrap; }
+  .files { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .files a { font-size: 13px; background: #eef2fb; padding: 4px 8px; border-radius: 5px; text-decoration: none; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  form.inline { display: inline; }
+  .badge { background: #fdecec; color: var(--danger); padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="{{ url_for('index') }}">🦷 Карты пациентов</a>
+  <nav><a href="{{ url_for('retention_check') }}" class="muted">Срок хранения</a></nav>
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>
