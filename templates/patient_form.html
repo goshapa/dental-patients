@@ -18,15 +18,6 @@
       </div>
     </div>
 
-    <label>Аллергии (в т.ч. на анестетики/препараты)</label>
-    <textarea name="allergies">{{ patient.allergies if patient else '' }}</textarea>
-
-    <label>Хронические заболевания</label>
-    <textarea name="chronic_conditions">{{ patient.chronic_conditions if patient else '' }}</textarea>
-
-    <label>Прочие заметки</label>
-    <textarea name="notes">{{ patient.notes if patient else '' }}</textarea>
-
     <button class="btn" type="submit">Сохранить</button>
     <a class="btn secondary" href="{{ url_for('patient_detail', patient_id=patient.id) if patient else url_for('index') }}">Отмена</a>
   </form>

@@ -24,51 +24,16 @@
   </div>
   <div class="field-label">Личная ссылка на карту</div>
   <div class="field-value"><a href="{{ url_for('patient_card', token=patient.access_token, _external=True) }}">{{ url_for('patient_card', token=patient.access_token, _external=True) }}</a></div>
-  {% if patient.allergies %}
-  <div class="field-label">Аллергии</div>
-  <div class="field-value">{{ patient.allergies }}</div>
-  {% endif %}
-  {% if patient.chronic_conditions %}
-  <div class="field-label">Хронические заболевания</div>
-  <div class="field-value">{{ patient.chronic_conditions }}</div>
-  {% endif %}
-  {% if patient.notes %}
-  <div class="field-label">Заметки</div>
-  <div class="field-value">{{ patient.notes }}</div>
-  {% endif %}
 </div>
 
 <div class="card">
   <h2>Новый визит / приём</h2>
   <form method="post" action="{{ url_for('new_visit', patient_id=patient.id) }}" enctype="multipart/form-data">
-    <div class="row">
-      <div>
-        <label>Дата приёма</label>
-        <input type="date" name="visit_date" value="{{ today }}">
-      </div>
-      <div>
-        <label>Номер зуба / область</label>
-        <input type="text" name="tooth_number" placeholder="напр. 26, 36-37">
-      </div>
-    </div>
+    <label>Дата приёма</label>
+    <input type="date" name="visit_date" value="{{ today }}">
 
-    <label>Жалобы</label>
-    <textarea name="complaints" placeholder="С чем пациент пришёл"></textarea>
-
-    <label>Осложнения</label>
-    <textarea name="complications" placeholder="Осложнения на момент обращения или после лечения"></textarea>
-
-    <label>Диагноз</label>
-    <textarea name="diagnosis"></textarea>
-
-    <label>Проведённое лечение</label>
-    <textarea name="treatment" placeholder="Манипуляции, анестезия, этапы"></textarea>
-
-    <label>Использованные материалы / препараты</label>
-    <textarea name="materials"></textarea>
-
-    <label>Рекомендации / план дальнейшего лечения</label>
-    <textarea name="recommendations"></textarea>
+    <label>Услуга</label>
+    <textarea name="service" placeholder="Какую услугу оказали"></textarea>
 
     <label>Рентген-снимки / фото (можно выбрать несколько файлов)</label>
     <input type="file" name="attachments" multiple accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,.pdf,.dcm">
@@ -85,18 +50,12 @@
       <div class="visit-header">
         <span class="visit-date">{{ v.visit_date }}</span>
         <span>
-          {% if v.tooth_number %}<span class="muted">Зуб/область: {{ v.tooth_number }}</span>{% endif %}
           <form class="inline" method="post" action="{{ url_for('delete_visit', visit_id=v.id) }}" onsubmit="return confirm('Удалить эту запись о визите?');">
             <button class="btn danger" style="margin-top:0;padding:4px 10px;font-size:12px;" type="submit">Удалить</button>
           </form>
         </span>
       </div>
-      {% if v.complaints %}<div class="field-label">Жалобы</div><div class="field-value">{{ v.complaints }}</div>{% endif %}
-      {% if v.complications %}<div class="field-label">Осложнения</div><div class="field-value">{{ v.complications }}</div>{% endif %}
-      {% if v.diagnosis %}<div class="field-label">Диагноз</div><div class="field-value">{{ v.diagnosis }}</div>{% endif %}
-      {% if v.treatment %}<div class="field-label">Лечение</div><div class="field-value">{{ v.treatment }}</div>{% endif %}
-      {% if v.materials %}<div class="field-label">Материалы</div><div class="field-value">{{ v.materials }}</div>{% endif %}
-      {% if v.recommendations %}<div class="field-label">Рекомендации</div><div class="field-value">{{ v.recommendations }}</div>{% endif %}
+      {% if v.service %}<div class="field-label">Услуга</div><div class="field-value">{{ v.service }}</div>{% endif %}
       {% if v.files %}
       <div class="field-label">Файлы</div>
       <div class="files">

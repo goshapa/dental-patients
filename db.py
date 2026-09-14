@@ -42,6 +42,7 @@ def init_db():
                 id SERIAL PRIMARY KEY,
                 patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
                 visit_date TEXT NOT NULL,
+                service TEXT,
                 tooth_number TEXT,
                 complaints TEXT,
                 complications TEXT,
@@ -84,6 +85,13 @@ def init_db():
         col_names = {c["column_name"] for c in cols}
         if "access_token" not in col_names:
             conn.execute("ALTER TABLE patients ADD COLUMN access_token TEXT UNIQUE")
+
+        # migrate older deployments that predate the simplified "service" field
+        visit_cols = conn.execute(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = 'visits'"
+        ).fetchall()
+        if "service" not in {c["column_name"] for c in visit_cols}:
+            conn.execute("ALTER TABLE visits ADD COLUMN service TEXT")
 
         rows = conn.execute(
             "SELECT id FROM patients WHERE access_token IS NULL OR access_token = ''"

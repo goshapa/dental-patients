@@ -130,14 +130,8 @@ def finish_visit(db, chat_id, session):
         send_message(chat_id, "Нет активного визита.")
         return
     row = db.execute(
-        "INSERT INTO visits (patient_id, visit_date, tooth_number, complaints, complications, diagnosis, "
-        "treatment, materials, recommendations, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-        (
-            patient_id, date.today().isoformat(), payload.get("tooth_number", ""),
-            payload.get("complaints", ""), payload.get("complications", ""), payload.get("diagnosis", ""),
-            payload.get("treatment", ""), payload.get("materials", ""), payload.get("recommendations", ""),
-            datetime.now(),
-        ),
+        "INSERT INTO visits (patient_id, visit_date, service, created_at) VALUES (%s, %s, %s, %s) RETURNING id",
+        (patient_id, date.today().isoformat(), payload.get("service", ""), datetime.now()),
     ).fetchone()
     visit_id = row["id"]
     for f in payload.get("files", []):
@@ -155,32 +149,14 @@ def finish_visit(db, chat_id, session):
 NEXT_PROMPT = {
     "np_name": ("np_dob", "Дата рождения (ДД.ММ.ГГГГ), или «-» чтобы пропустить:"),
     "np_dob": ("np_phone", "Телефон, или «-»:"),
-    "np_phone": ("np_allergies", "Аллергии (на анестетики/препараты), или «-»:"),
-    "np_allergies": ("np_chronic", "Хронические заболевания, или «-»:"),
-    "np_chronic": ("np_notes", "Прочие заметки, или «-»:"),
-    "v_tooth": ("v_complaints", "Жалобы, или «-»:"),
-    "v_complaints": ("v_complications", "Осложнения, или «-»:"),
-    "v_complications": ("v_diagnosis", "Диагноз, или «-»:"),
-    "v_diagnosis": ("v_treatment", "Проведённое лечение, или «-»:"),
-    "v_treatment": ("v_materials", "Использованные материалы/препараты, или «-»:"),
-    "v_materials": ("v_recs", "Рекомендации / план дальнейшего лечения, или «-»:"),
 }
-
-FIELD_FOR_STATE = {
-    "np_name": "full_name", "np_dob": "birth_date", "np_phone": "phone",
-    "np_allergies": "allergies", "np_chronic": "chronic_conditions", "np_notes": "notes",
-    "v_tooth": "tooth_number", "v_complaints": "complaints", "v_complications": "complications",
-    "v_diagnosis": "diagnosis", "v_treatment": "treatment", "v_materials": "materials", "v_recs": "recommendations",
-}
-
 
 def create_patient(db, payload):
     token_row = db.execute(
-        "INSERT INTO patients (full_name, birth_date, phone, allergies, chronic_conditions, notes, access_token, created_at) "
-        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING access_token",
+        "INSERT INTO patients (full_name, birth_date, phone, access_token, created_at) "
+        "VALUES (%s, %s, %s, %s, %s) RETURNING access_token",
         (
             payload.get("full_name", ""), payload.get("birth_date", ""), payload.get("phone", ""),
-            payload.get("allergies", ""), payload.get("chronic_conditions", ""), payload.get("notes", ""),
             dbmod.gen_token(), datetime.now(),
         ),
     ).fetchone()
@@ -210,8 +186,8 @@ def handle_text_step(db, chat_id, state, payload, text):
         send_message(chat_id, prompt)
         return
 
-    if state == "np_notes":
-        payload["notes"] = clean(text)
+    if state == "np_phone":
+        payload["phone"] = clean(text)
         token = create_patient(db, payload)
         clear_session(db, chat_id)
         name = payload.get("full_name", "")
@@ -222,23 +198,15 @@ def handle_text_step(db, chat_id, state, payload, text):
         )
         return
 
-    if state == "v_recs":
-        payload["recommendations"] = clean(text)
+    if state == "v_service":
+        payload["service"] = clean(text)
         payload["files"] = payload.get("files", [])
         set_session(db, chat_id, "v_files", payload)
         send_message(
             chat_id,
-            "Пришлите рентген-снимки/фото (можно несколько сообщений подряд). "
-            "Когда закончите — отправьте /done. Если снимков нет — сразу /done.",
+            "Пришлите фото/снимки (можно несколько сообщений подряд). "
+            "Когда закончите — отправьте /done. Если фото нет — сразу /done.",
         )
-        return
-
-    if state in NEXT_PROMPT:
-        field = FIELD_FOR_STATE[state]
-        payload[field] = clean(text)
-        next_state, prompt = NEXT_PROMPT[state]
-        set_session(db, chat_id, next_state, payload)
-        send_message(chat_id, prompt)
         return
 
     # idle or unrecognized state — treat plain text as a search
@@ -338,8 +306,8 @@ def handle_callback(db, callback_query):
         if patient is None:
             send_message(chat_id, "Пациент не найден.")
             return
-        set_session(db, chat_id, "v_tooth", {"patient_id": patient_id, "files": []})
-        send_message(chat_id, f"Новый визит — {patient['full_name']}.\nНомер зуба / область, или «-»:")
+        set_session(db, chat_id, "v_service", {"patient_id": patient_id, "files": []})
+        send_message(chat_id, f"Новый визит — {patient['full_name']}.\nКакую услугу оказали?")
 
 
 def handle_update(update, db):

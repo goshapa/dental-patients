@@ -64,15 +64,12 @@ def new_patient():
     if request.method == "POST":
         db = get_db()
         row = db.execute(
-            "INSERT INTO patients (full_name, birth_date, phone, allergies, chronic_conditions, notes, access_token, created_at) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            "INSERT INTO patients (full_name, birth_date, phone, access_token, created_at) "
+            "VALUES (%s, %s, %s, %s, %s) RETURNING id",
             (
                 request.form["full_name"].strip(),
                 request.form.get("birth_date", "").strip(),
                 request.form.get("phone", "").strip(),
-                request.form.get("allergies", "").strip(),
-                request.form.get("chronic_conditions", "").strip(),
-                request.form.get("notes", "").strip(),
                 dbmod.gen_token(),
                 datetime.now(),
             ),
@@ -120,14 +117,11 @@ def edit_patient(patient_id):
         return "Пациент не найден", 404
     if request.method == "POST":
         db.execute(
-            "UPDATE patients SET full_name=%s, birth_date=%s, phone=%s, allergies=%s, chronic_conditions=%s, notes=%s WHERE id=%s",
+            "UPDATE patients SET full_name=%s, birth_date=%s, phone=%s WHERE id=%s",
             (
                 request.form["full_name"].strip(),
                 request.form.get("birth_date", "").strip(),
                 request.form.get("phone", "").strip(),
-                request.form.get("allergies", "").strip(),
-                request.form.get("chronic_conditions", "").strip(),
-                request.form.get("notes", "").strip(),
                 patient_id,
             ),
         )
@@ -152,18 +146,11 @@ def new_visit(patient_id):
         return "Пациент не найден", 404
 
     row = db.execute(
-        "INSERT INTO visits (patient_id, visit_date, tooth_number, complaints, complications, diagnosis, "
-        "treatment, materials, recommendations, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+        "INSERT INTO visits (patient_id, visit_date, service, created_at) VALUES (%s, %s, %s, %s) RETURNING id",
         (
             patient_id,
             request.form.get("visit_date") or date.today().isoformat(),
-            request.form.get("tooth_number", "").strip(),
-            request.form.get("complaints", "").strip(),
-            request.form.get("complications", "").strip(),
-            request.form.get("diagnosis", "").strip(),
-            request.form.get("treatment", "").strip(),
-            request.form.get("materials", "").strip(),
-            request.form.get("recommendations", "").strip(),
+            request.form.get("service", "").strip(),
             datetime.now(),
         ),
     ).fetchone()
